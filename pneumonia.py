@@ -1,14 +1,22 @@
 import streamlit as st
-import tensorflow as tf
+import os, requests, tensorflow as tf
 
 st.title('X-Ray Image Classifier')
+MODEL_PATH = "custom_pre_trained_model_10.h5"
+MODEL_URL = "https://huggingface.co/your-username/pneumonia-cnn-model/resolve/main/custom_pre_trained_model_10.h5"
+
+if not os.path.exists(MODEL_PATH):
+    print("Downloading model from Hugging Face Hub...")
+    response = requests.get(MODEL_URL, stream=True)
+    with open(MODEL_PATH, "wb") as f:
+        for chunk in response.iter_content(chunk_size=8192):
+            if chunk:
+                f.write(chunk)
+
+model = tf.keras.models.load_model(MODEL_PATH)
 
 IMG_SIZE = 100
-PRETRAINED_MODEL_PATH = "custom_pre_trained_model_10.h5"
 CATEGORIES = ["NORMAL", "PNEUMONIA"]
-
-# Load model
-model = tf.keras.models.load_model(PRETRAINED_MODEL_PATH)
 print('Model Loaded')
 
 def predict_image(file):
@@ -61,3 +69,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

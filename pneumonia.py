@@ -1,20 +1,34 @@
+import os
 import streamlit as st
 import tensorflow as tf
-from huggingface_hub import hf_hub_download
+import gdown
 
 st.title('X-Ray Image Classifier')
 
 IMG_SIZE = 100
 CATEGORIES = ["NORMAL", "PNEUMONIA"]
 
-# Hugging Face repo details
-REPO_ID = "Trilokesh15/pneumonia-cnn-model"
-FILENAME = "custom_pre_trained_model_10.h5"
+# Google Drive file ID (replace with your own model file's ID)
+FILE_ID = "16-u_JQ-b3Xl0mgDVeME3_Vdk0rWHlpIa"  
+OUTPUT_PATH = "custom_pre_trained_model_10.h5"
 
-# Download model file from Hugging Face and load
-MODEL_PATH = hf_hub_download(repo_id=REPO_ID, filename=FILENAME)
-model = tf.keras.models.load_model(MODEL_PATH)
-print('Model Loaded')
+# Download model from Google Drive if not already present
+if not os.path.exists(OUTPUT_PATH):
+    try:
+        url = f"https://drive.google.com/uc?id={FILE_ID}"
+        gdown.download(url, OUTPUT_PATH, quiet=False)
+        st.write("✅ Model downloaded from Google Drive")
+    except Exception as e:
+        st.error(f"❌ Failed to download model: {e}")
+        st.stop()
+
+# Load model
+try:
+    model = tf.keras.models.load_model(OUTPUT_PATH)
+    print("Model Loaded")
+except Exception as e:
+    st.error(f"❌ Failed to load model: {e}")
+    st.stop()
 
 def predict_image(file):
     img = tf.keras.preprocessing.image.load_img(file, target_size=(IMG_SIZE, IMG_SIZE))

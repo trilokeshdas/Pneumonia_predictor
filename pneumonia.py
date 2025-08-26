@@ -1,14 +1,19 @@
 import streamlit as st
 import tensorflow as tf
+from huggingface_hub import hf_hub_download
 
 st.title('X-Ray Image Classifier')
 
 IMG_SIZE = 100
-PRETRAINED_MODEL_PATH = "custom_pre_trained_model_10.h5"
 CATEGORIES = ["NORMAL", "PNEUMONIA"]
 
-# Load model
-model = tf.keras.models.load_model(PRETRAINED_MODEL_PATH)
+# Hugging Face repo details
+REPO_ID = "Trilokesh15/pneumonia-cnn-model"
+FILENAME = "custom_pre_trained_model_10.h5"
+
+# Download model file from Hugging Face and load
+MODEL_PATH = hf_hub_download(repo_id=REPO_ID, filename=FILENAME)
+model = tf.keras.models.load_model(MODEL_PATH)
 print('Model Loaded')
 
 def predict_image(file):

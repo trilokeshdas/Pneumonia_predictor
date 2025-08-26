@@ -2,9 +2,8 @@ import os
 import streamlit as st
 import tensorflow as tf
 import gdown
-from PIL import Image
 
-st.title('X-Ray Image Classifier with Pre-Check')
+st.title('X-Ray Image Classifier')
 
 IMG_SIZE = 100
 CATEGORIES = ["NORMAL", "PNEUMONIA"]
@@ -18,41 +17,18 @@ if not os.path.exists(OUTPUT_PATH):
     try:
         url = f"https://drive.google.com/uc?id={FILE_ID}"
         gdown.download(url, OUTPUT_PATH, quiet=False)
+        st.write("✅ Model downloaded from Google Drive")
     except Exception as e:
         st.error(f"❌ Failed to download model: {e}")
         st.stop()
 
-# Load pneumonia detection model
+# Load model
 try:
     model = tf.keras.models.load_model(OUTPUT_PATH)
-    print("✅ Model Loaded")
+    print("Model Loaded")
 except Exception as e:
     st.error(f"❌ Failed to load model: {e}")
     st.stop()
-
-# Load a general-purpose pre-trained model (for X-ray verification)
-precheck_model = tf.keras.applications.MobileNetV2(weights="imagenet")
-
-def is_xray_image(file):
-    """Check if uploaded image looks like an X-ray"""
-    try:
-        img = Image.open(file).convert("RGB")
-        img = img.resize((224, 224))
-        img_array = tf.keras.preprocessing.image.img_to_array(img)
-        img_array = tf.keras.applications.mobilenet_v2.preprocess_input(img_array)
-        img_array = tf.expand_dims(img_array, axis=0)
-
-        preds = precheck_model.predict(img_array)
-        decoded_preds = tf.keras.applications.mobilenet_v2.decode_predictions(preds, top=3)[0]
-
-        labels = [label for (_, label, _) in decoded_preds]
-
-        # Common medical/X-ray related keywords
-        xray_keywords = ["ray", "x_ray", "radiograph", "chest"]
-
-        return any(keyword in labels for keyword in xray_keywords)
-    except Exception:
-        return False
 
 def predict_image(file):
     img = tf.keras.preprocessing.image.load_img(file, target_size=(IMG_SIZE, IMG_SIZE))
@@ -84,14 +60,9 @@ def load_classifier():
     file = st.file_uploader("Choose an X-Ray image", type=['jpeg', 'jpg', 'png'])
 
     if file is not None:
-        st.image(file, caption="Uploaded Image", use_container_width=True)
+        st.image(file, caption="Uploaded X-Ray", use_container_width=True)
 
         if st.button("PREDICT"):
-            with st.spinner("Checking if this is an X-ray..."):
-                if not is_xray_image(file):
-                    st.error("❌ The uploaded image does not appear to be an X-ray. Please upload a valid chest X-ray.")
-                    return
-
             with st.spinner("Analyzing X-Ray... Please wait..."):
                 pred_class, pred_conf, prob_normal, prob_pneumonia = predict_image(file)
 
@@ -100,6 +71,7 @@ def load_classifier():
             st.write(f"Normal: {round(prob_normal * 100, 2)}%")
             st.write(f"Pneumonia: {round(prob_pneumonia * 100, 2)}%")
 
+            # Patient status conclusion
             st.markdown("---")
             st.markdown(patient_status(prob_pneumonia, prob_normal))
 

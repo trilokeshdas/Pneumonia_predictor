@@ -17,7 +17,6 @@ if not os.path.exists(OUTPUT_PATH):
     try:
         url = f"https://drive.google.com/uc?id={FILE_ID}"
         gdown.download(url, OUTPUT_PATH, quiet=False)
-        st.write("✅ Model downloaded from Google Drive")
     except Exception as e:
         st.error(f"❌ Failed to download model: {e}")
         st.stop()
@@ -80,3 +79,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

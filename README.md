@@ -36,7 +36,7 @@ git clone https://github.com/your-username/pneumonia-detection.git
 cd pneumonia-detection
 ```
 ```Make sure you have Python 3.9+ installed. Then run:
-pip install streamlit tensorflow numpy pillow
+pip install streamlit tensorflow numpy 
 ```
 ```Run the following command in your terminal:
 streamlit run app.py

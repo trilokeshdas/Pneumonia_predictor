@@ -1,6 +1,5 @@
 streamlit
-tensorflow
+tensorflow-cpu
 numpy
 pillow
-huggingface_hub
-h5py
+gdown

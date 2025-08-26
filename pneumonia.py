@@ -2,22 +2,31 @@ import streamlit as st
 import os, requests, tensorflow as tf
 
 st.title('X-Ray Image Classifier')
+
 MODEL_PATH = "custom_pre_trained_model_10.h5"
 MODEL_URL = "https://huggingface.co/Trilokesh15/pneumonia-cnn-model/resolve/main/custom_pre_trained_model_10.h5"
 
+# Ensure model exists or download it
 if not os.path.exists(MODEL_PATH):
-    print("Downloading model from Hugging Face Hub...")
-    response = requests.get(MODEL_URL, stream=True)
-    with open(MODEL_PATH, "wb") as f:
-        for chunk in response.iter_content(chunk_size=8192):
-            if chunk:
-                f.write(chunk)
+    st.write("Downloading model from Hugging Face Hub...")
+    response = requests.get(MODEL_URL, headers={"User-Agent": "streamlit-app"}, stream=True)
+    if response.status_code == 200:
+        with open(MODEL_PATH, "wb") as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+        st.success("Model downloaded successfully ✅")
+    else:
+        st.error(f"Failed to download model. HTTP Status: {response.status_code}")
+        st.stop()
 
+# Load model
 model = tf.keras.models.load_model(MODEL_PATH)
 
 IMG_SIZE = 100
 CATEGORIES = ["NORMAL", "PNEUMONIA"]
 print('Model Loaded')
+
 
 def predict_image(file):
     img = tf.keras.preprocessing.image.load_img(file, target_size=(IMG_SIZE, IMG_SIZE))
@@ -32,6 +41,7 @@ def predict_image(file):
 
     return pred_class, confidence, prob_normal, prob_pneumonia
 
+
 def patient_status(prob_pneumonia, prob_normal):
     if prob_normal >= 0.9:
         return "**The patient is likely healthy. No signs of Pneumonia detected.**"
@@ -43,6 +53,7 @@ def patient_status(prob_pneumonia, prob_normal):
         return "**Moderate risk. Further medical tests are recommended.**"
     else:
         return "**High likelihood of Pneumonia. Consult a doctor immediately.**"
+
 
 def load_classifier():
     st.subheader("Upload an X-Ray image to detect if it is Normal or Pneumonia")
@@ -60,14 +71,13 @@ def load_classifier():
             st.write(f"Normal: {round(prob_normal * 100, 2)}%")
             st.write(f"Pneumonia: {round(prob_pneumonia * 100, 2)}%")
 
-            # Patient status conclusion
             st.markdown("---")
             st.markdown(patient_status(prob_pneumonia, prob_normal))
+
 
 def main():
     load_classifier()
 
+
 if __name__ == "__main__":
     main()
-
-

@@ -25,7 +25,6 @@ The web interface is built with **Streamlit**, making it simple and interactive 
 - **TensorFlow / Keras** – deep learning model  
 - **Streamlit** – web app interface  
 - **NumPy** – numerical computations  
-- **Pillow (PIL)** – image preprocessing  
 
 ---
 
@@ -35,3 +34,11 @@ The web interface is built with **Streamlit**, making it simple and interactive 
 ```bash
 git clone https://github.com/your-username/pneumonia-detection.git
 cd pneumonia-detection
+```
+```Make sure you have Python 3.9+ installed. Then run:
+pip install streamlit tensorflow numpy pillow
+```
+```Run the following command in your terminal:
+streamlit run app.py
+
+

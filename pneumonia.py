@@ -3,7 +3,7 @@ import os, requests, tensorflow as tf
 
 st.title('X-Ray Image Classifier')
 MODEL_PATH = "custom_pre_trained_model_10.h5"
-MODEL_URL = "https://huggingface.co/your-username/pneumonia-cnn-model/resolve/main/custom_pre_trained_model_10.h5"
+MODEL_URL = "https://huggingface.co/Trilokesh15/pneumonia-cnn-model/resolve/main/custom_pre_trained_model_10.h5"
 
 if not os.path.exists(MODEL_PATH):
     print("Downloading model from Hugging Face Hub...")
@@ -69,4 +69,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 

@@ -1,5 +1,5 @@
 # 🩺 Pneumonia Detection from Chest X-Rays  
-
+https://pneumoniapredictor-7kgprhluenuga3r8aakcxc.streamlit.app/
 A **Streamlit web application** that uses a deep learning model to classify chest X-ray images as **NORMAL** or **PNEUMONIA**.  
 The app predicts probabilities for both classes and provides an easy-to-understand health status message.  
 
